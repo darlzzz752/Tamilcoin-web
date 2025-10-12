@@ -1,0 +1,5 @@
+Flask>=2.3
+python-telegram-bot>=20.0
+httpx>=0.24
+requests>=2.31
+dotenv>=0.21
