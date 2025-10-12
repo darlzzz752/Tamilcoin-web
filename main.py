@@ -450,8 +450,203 @@ def breakout_command(update: Update, context: CallbackContext):
     else:
         update.message.reply_text(f"❌ Error: {details}")
 
-def ema_command(update: Update, context: CallbackContext):
+ def ema_command(update: Update, context: CallbackContext):
     command = update.message.text[3:].lower()
     
     if command not in PAIRS:
-        update.message.reply_text(f
+        update.message.reply_text(f"❌ Unknown pair: {command}\n\nUse /start to see available pairs")
+        return
+    
+    pair_symbol, pair_name, pip_value, pip_size = PAIRS[command]
+    update.message.reply_text(f"⏳ Analyzing {pair_name} with EMA+RSI strategy...")
+    
+    signal, details, lot_size, entry, sl, tp, strategy_name = get_signal(pair_symbol, pip_value, pip_size, "EMA_RSI")
+    
+    if signal and signal != "HOLD":
+        send_signal(pair_name, signal, details, lot_size, "EMA+RSI", update.message.chat_id, entry, sl, tp)
+    elif signal == "HOLD":
+        update.message.reply_text(f"📊 {pair_name} - EMA+RSI Strategy\n\n{details}")
+    else:
+        update.message.reply_text(f"❌ Error: {details}")
+
+def ma_crossover_command(update: Update, context: CallbackContext):
+    command = update.message.text[3:].lower()
+    
+    if command not in PAIRS:
+        update.message.reply_text(f"❌ Unknown pair: {command}\n\nUse /start to see available pairs")
+        return
+    
+    pair_symbol, pair_name, pip_value, pip_size = PAIRS[command]
+    update.message.reply_text(f"⏳ Analyzing {pair_name} with MA CROSSOVER strategy...")
+    
+    signal, details, lot_size, entry, sl, tp, strategy_name = get_signal(pair_symbol, pip_value, pip_size, "MA_CROSSOVER")
+    
+    if signal and signal != "HOLD":
+        send_signal(pair_name, signal, details, lot_size, "MA Crossover", update.message.chat_id, entry, sl, tp)
+    elif signal == "HOLD":
+        update.message.reply_text(f"📊 {pair_name} - MA Crossover Strategy\n\n{details}")
+    else:
+        update.message.reply_text(f"❌ Error: {details}")
+
+def fibonacci_command(update: Update, context: CallbackContext):
+    command = update.message.text[3:].lower()
+    
+    if command not in PAIRS:
+        update.message.reply_text(f"❌ Unknown pair: {command}\n\nUse /start to see available pairs")
+        return
+    
+    pair_symbol, pair_name, pip_value, pip_size = PAIRS[command]
+    update.message.reply_text(f"⏳ Analyzing {pair_name} with FIBONACCI strategy...")
+    
+    signal, details, lot_size, entry, sl, tp, strategy_name = get_signal(pair_symbol, pip_value, pip_size, "FIBONACCI")
+    
+    if signal and signal != "HOLD":
+        send_signal(pair_name, signal, details, lot_size, "Fibonacci", update.message.chat_id, entry, sl, tp)
+    elif signal == "HOLD":
+        update.message.reply_text(f"📊 {pair_name} - Fibonacci Strategy\n\n{details}")
+    else:
+        update.message.reply_text(f"❌ Error: {details}")
+
+def price_action_command(update: Update, context: CallbackContext):
+    command = update.message.text[3:].lower()
+    
+    if command not in PAIRS:
+        update.message.reply_text(f"❌ Unknown pair: {command}\n\nUse /start to see available pairs")
+        return
+    
+    pair_symbol, pair_name, pip_value, pip_size = PAIRS[command]
+    update.message.reply_text(f"⏳ Analyzing {pair_name} with PRICE ACTION strategy...")
+    
+    signal, details, lot_size, entry, sl, tp, strategy_name = get_signal(pair_symbol, pip_value, pip_size, "PRICE_ACTION")
+    
+    if signal and signal != "HOLD":
+        send_signal(pair_name, signal, details, lot_size, "Price Action", update.message.chat_id, entry, sl, tp)
+    elif signal == "HOLD":
+        update.message.reply_text(f"📊 {pair_name} - Price Action Strategy\n\n{details}")
+    else:
+        update.message.reply_text(f"❌ Error: {details}")
+
+def range_trading_command(update: Update, context: CallbackContext):
+    command = update.message.text[3:].lower()
+    
+    if command not in PAIRS:
+        update.message.reply_text(f"❌ Unknown pair: {command}\n\nUse /start to see available pairs")
+        return
+    
+    pair_symbol, pair_name, pip_value, pip_size = PAIRS[command]
+    update.message.reply_text(f"⏳ Analyzing {pair_name} with RANGE TRADING strategy...")
+    
+    signal, details, lot_size, entry, sl, tp, strategy_name = get_signal(pair_symbol, pip_value, pip_size, "RANGE_TRADING")
+    
+    if signal and signal != "HOLD":
+        send_signal(pair_name, signal, details, lot_size, "Range Trading", update.message.chat_id, entry, sl, tp)
+    elif signal == "HOLD":
+        update.message.reply_text(f"📊 {pair_name} - Range Trading Strategy\n\n{details}")
+    else:
+        update.message.reply_text(f"❌ Error: {details}")
+
+def pullback_command(update: Update, context: CallbackContext):
+    command = update.message.text[4:].lower()
+    
+    if command not in PAIRS:
+        update.message.reply_text(f"❌ Unknown pair: {command}\n\nUse /start to see available pairs")
+        return
+    
+    pair_symbol, pair_name, pip_value, pip_size = PAIRS[command]
+    update.message.reply_text(f"⏳ Analyzing {pair_name} with PULLBACK strategy...")
+    
+    signal, details, lot_size, entry, sl, tp, strategy_name = get_signal(pair_symbol, pip_value, pip_size, "PULLBACK")
+    
+    if signal and signal != "HOLD":
+        send_signal(pair_name, signal, details, lot_size, "Pullback", update.message.chat_id, entry, sl, tp)
+    elif signal == "HOLD":
+        update.message.reply_text(f"📊 {pair_name} - Pullback Strategy\n\n{details}")
+    else:
+        update.message.reply_text(f"❌ Error: {details}")
+
+def background_monitor():
+    print(f"Background monitor started... checking {len(PAIRS)} pairs every 15 minutes.")
+    print(f"Strategy Mode: {STRATEGY_MODE}")
+    print(f"🔥 SURE SHOT SIGNALS: Active (broadcasts when {SURE_SHOT_MIN_STRATEGIES}+ strategies agree)")
+    if CHANNEL_ID:
+        print(f"📢 Channel Broadcast: ENABLED (ID: {CHANNEL_ID})")
+    else:
+        print(f"📢 Channel Broadcast: DISABLED (set TELEGRAM_CHANNEL_ID to enable)")
+    
+    while True:
+        try:
+            for pair_key, (pair_symbol, pair_name, pip_value, pip_size) in PAIRS.items():
+                try:
+                    sure_shot_msg = check_sure_shot_signal(pair_symbol, pair_name, pip_value, pip_size)
+                    if sure_shot_msg and CHANNEL_ID:
+                        bot.send_message(chat_id=CHANNEL_ID, text=sure_shot_msg)
+                        print(f"🔥 SURE SHOT: {pair_name} - Broadcasted to channel!")
+                    elif sure_shot_msg:
+                        print(f"🔥 SURE SHOT: {pair_name} - (Channel not configured)")
+                    
+                    signal, details, lot_size, entry, sl, tp, strategy_name = get_signal(pair_symbol, pip_value, pip_size, STRATEGY_MODE)
+                    if signal in ["BUY", "SELL"] and CHAT_ID:
+                        send_signal(pair_name, signal, details, lot_size, strategy_name, CHAT_ID, entry, sl, tp)
+                        print(f"{pair_name}: {signal} [{strategy_name}] @ {entry} | SL: {sl} | TP: {tp} | Lot: {lot_size}")
+                    
+                    time.sleep(2)
+                except Exception as e:
+                    print(f"Error with {pair_name}: {e}")
+            
+            time.sleep(CHECK_INTERVAL)
+        except Exception as e:
+            print(f"Background monitor error: {e}")
+            time.sleep(60)
+
+def main():
+    updater = Updater(token=TOKEN, use_context=True)
+    dispatcher = updater.dispatcher
+    
+    dispatcher.add_handler(CommandHandler("start", start_command))
+    
+    for pair_key in PAIRS.keys():
+        dispatcher.add_handler(CommandHandler(pair_key, pair_command))
+    
+    for pair_key in PAIRS.keys():
+        dispatcher.add_handler(CommandHandler(f"b_{pair_key}", breakout_command))
+    
+    for pair_key in PAIRS.keys():
+        dispatcher.add_handler(CommandHandler(f"e_{pair_key}", ema_command))
+    
+    for pair_key in PAIRS.keys():
+        dispatcher.add_handler(CommandHandler(f"m_{pair_key}", ma_crossover_command))
+    
+    for pair_key in PAIRS.keys():
+        dispatcher.add_handler(CommandHandler(f"f_{pair_key}", fibonacci_command))
+    
+    for pair_key in PAIRS.keys():
+        dispatcher.add_handler(CommandHandler(f"p_{pair_key}", price_action_command))
+    
+    for pair_key in PAIRS.keys():
+        dispatcher.add_handler(CommandHandler(f"r_{pair_key}", range_trading_command))
+    
+    for pair_key in PAIRS.keys():
+        dispatcher.add_handler(CommandHandler(f"pb_{pair_key}", pullback_command))
+    
+    monitor_thread = threading.Thread(target=background_monitor, daemon=True)
+    monitor_thread.start()
+    
+    print("✅ Bot Started!")
+    print(f"Monitoring {len(PAIRS)} pairs every {CHECK_INTERVAL} seconds")
+    print(f"Account Balance: ${ACCOUNT_BALANCE}")
+    print(f"Risk Per Trade: {RISK_PERCENT}%")
+    print(f"Stop Loss: {STOP_LOSS_PIPS} pips | Take Profit: {TAKE_PROFIT_PIPS} pips")
+    print(f"Strategy Mode: {STRATEGY_MODE}")
+    
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == "__main__":
+    if not TOKEN or not CHAT_ID:
+        print("❌ ERROR: Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID environment variables!")
+        print("Please set them in the Secrets tab:")
+        print("1. TELEGRAM_BOT_TOKEN - Get from @BotFather on Telegram")
+        print("2. TELEGRAM_CHAT_ID - Your Telegram chat ID")
+        exit(1)
+    main()
+    
